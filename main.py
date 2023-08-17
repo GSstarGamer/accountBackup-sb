@@ -1,0 +1,30 @@
+import requests
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
+token = os.getenv('TOKEN')
+
+
+def discordEP(endpoint: str, type: str, json_data: dict = None):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0',
+        'Authorization': token
+    }
+    if endpoint.startswith('/'):
+        endpoint = endpoint[-1:]
+    if type == 'post':
+        return requests.post('https://discord.com/api/v10/' +
+                             endpoint, headers=headers, json_data=json_data)
+
+    elif type == 'get':
+        return requests.get('https://discord.com/api/v10/' +
+                            endpoint, headers=headers, data=json_data).json()
+
+
+friends = [friend["user"]
+           for friend in discordEP('users/@me/relationships', 'get')]
+
+
+print(friends)
