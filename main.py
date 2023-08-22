@@ -1,6 +1,9 @@
 import requests
 from dotenv import load_dotenv
 import os
+import base64
+import base64
+from discord_protos import FrecencyUserSettings
 
 
 load_dotenv()
@@ -13,7 +16,7 @@ def discordEP(endpoint: str, type: str, json_data: dict = None):
         'Authorization': token
     }
     if endpoint.startswith('/'):
-        endpoint = endpoint[-1:]
+        endpoint = endpoint[1:]
     if type == 'post':
         return requests.post('https://discord.com/api/v10/' +
                              endpoint, headers=headers, json_data=json_data)
@@ -23,8 +26,10 @@ def discordEP(endpoint: str, type: str, json_data: dict = None):
                             endpoint, headers=headers, data=json_data).json()
 
 
-friends = [friend["user"]
-           for friend in discordEP('users/@me/relationships', 'get')]
+# friends = [friend["user"]
+#            for friend in discordEP('users/@me/relationships', 'get')]
 
-
-print(friends)
+data = discordEP(
+    '/users/@me/settings-proto/2', 'get')
+gifs = [i for i in FrecencyUserSettings.FromString(
+    base64.b64decode(data['settings'])).favorite_gifs.gifs]
